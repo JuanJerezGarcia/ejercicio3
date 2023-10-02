@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,9 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.jjg.ejercicio3.ui.theme.Ejercicio3Theme
 
@@ -29,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ConstraintBarrier()
+                    ConstraintChainExample()
                 }
             }
         }
@@ -45,15 +49,59 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     Ejercicio3Theme {
-        ConstraintBarrier()
+        ConstraintChainExample()
     }
 }
 
 @Composable
-fun ConstraintBarrier(){
+fun ConstraintChainExample() {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+            .border(
+                1.dp, Color.Black,
+                RectangleShape
+            )
+   )  {
+        val (boxRed, boxYellow, boxBlue) = createRefs()
+
+        Box(modifier = Modifier
+            .size(75.dp)
+            .background(Color.Red)
+            .constrainAs(boxRed) {
+                start.linkTo(parent.start)
+                end.linkTo(boxYellow.start)
+            }
+        )
+
+        Box(modifier = Modifier
+            .size(75.dp)
+            .background(Color.Yellow)
+            .constrainAs(boxYellow) {
+                start.linkTo(boxRed.end)
+                end.linkTo(boxBlue.start)
+            }
+        )
+
+        Box(modifier = Modifier
+            .size(75.dp)
+            .background(Color.Blue)
+            .constrainAs(boxBlue) {
+                start.linkTo(boxYellow.start)
+                end.linkTo(parent.end)
+            }
+        )
+        //variar el chain a los 3 box
+        createHorizontalChain(boxRed, boxBlue, boxYellow, chainStyle = ChainStyle.SpreadInside)
+    }
+}
+
+@Composable
+fun ConstraintBarrier() {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (box1, box2, box3) = createRefs()
-        val barrier= createEndBarrier(box1,box2)
+        val barrier = createEndBarrier(box1, box2)
 
         Box(modifier = Modifier
             .size(125.dp)
@@ -79,14 +127,14 @@ fun ConstraintBarrier(){
             }
         )
     }
-    }
+}
 
 @Composable
-fun ConstraintLayoutGuide(){
+fun ConstraintLayoutGuide() {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val boxRed = createRef()
-        val topGuido= createGuidelineFromTop(0.1f)
-        val startGuido= createGuidelineFromStart(0.25f)
+        val topGuido = createGuidelineFromTop(0.1f)
+        val startGuido = createGuidelineFromStart(0.25f)
         Box(modifier = Modifier
             .size(125.dp)
             .background(Color.Red)
@@ -102,7 +150,7 @@ fun ConstraintLayoutGuide(){
 fun ContraintExample() {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
 
-        val (boxRed, boxYellow,boxBlue,boxGreen,boxMorado) = createRefs()//crear variables de referencia
+        val (boxRed, boxYellow, boxBlue, boxGreen, boxMorado) = createRefs()//crear variables de referencia
 
         Box(modifier = Modifier
             .size(125.dp)
